@@ -40,7 +40,7 @@ public:
 	{
 		cout << "Tank is gone\t" << this << endl;
 	}
-	void info()const
+	void info()const 
 	{
 		cout << "Tank volume:\t" << VOLUME << endl;
 		cout << "Fuel level:\t" << fuel_level << endl;
