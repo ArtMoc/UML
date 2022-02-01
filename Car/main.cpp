@@ -1,4 +1,7 @@
 #include <iostream>
+#include <conio.h>
+#include <Windows.h>
+#include <chrono>
 using namespace std;
 
 #define MIN_TANK_VOLUME 40
@@ -21,10 +24,10 @@ public:
 	}
 	double fill(double fuel)
 	{
-		if (fuel_level+fuel < 0)return fuel_level = 0;
+		if (fuel_level + fuel < 0)return fuel_level = 0;
 		if (fuel_level + fuel > VOLUME)return fuel_level = VOLUME;
 		//if (fuel_level+fuel>=0 && fuel_level + fuel <= VOLUME)fuel_level += fuel;
-		else return fuel_level+=fuel;
+		else return fuel_level += fuel;
 	}
 	double give_fuel(double fuel)
 	{
@@ -33,7 +36,7 @@ public:
 		return fuel_level;
 	}
 	Tank(unsigned int volume)
-		:VOLUME(volume >= MIN_TANK_VOLUME && volume <= MAX_TANK_VOLUME ? volume : MAX_TANK_VOLUME), 
+		:VOLUME(volume >= MIN_TANK_VOLUME && volume <= MAX_TANK_VOLUME ? volume : MAX_TANK_VOLUME),
 		fuel_level(0)
 	{
 		cout << "Tank is ready\t" << this << endl;
@@ -42,7 +45,7 @@ public:
 	{
 		cout << "Tank is gone\t" << this << endl;
 	}
-	void info()const 
+	void info()const
 	{
 		cout << "Tank volume:\t" << VOLUME << endl;
 		cout << "Fuel level:\t" << fuel_level << endl;
@@ -102,7 +105,83 @@ public:
 	}
 };
 
+class Car
+{
+	Engine engine;
+	Tank tank;
+	bool driver_inside;
+public:
+	Car(double engine_consumption, unsigned int tank_volume) :engine(engine_consumption), tank(tank_volume)
+	{
+		driver_inside = false;
+		cout << "Your car is ready to go\t" << this << endl;
+	}
+	~Car()
+	{
+		cout << "Your car is over" << endl;
+	}
+
+	void fill(double fuel)
+	{
+		tank.fill(fuel);
+	}
+	void start_engine()
+	{
+		if (tank.get_fuel_level())engine.start();
+	}
+	void stop_engine()
+	{
+		engine.stop();
+	}
+
+	void get_in()
+	{
+		driver_inside = true;
+	}
+	void get_out()
+	{
+		driver_inside = false;
+	}
+
+	void control()
+	{
+		char key;
+		do
+		{
+			key = _getch();
+			switch (key)
+			{
+			case 13: //сесть в машину. Нужно тобразить панель приборов
+				break;
+			case 'F':case 'f'://заправить машину
+				double fuel;
+				cout << "Введите объем топлива: "; cin >> fuel;
+				fill(fuel);
+				break;
+			case 'I':case 'i': //зажигание
+				break;
+			}
+		} while (key != 27);
+	}
+
+	void control_panel()
+	{
+		while (driver_inside)
+		{
+			cout << "Fuel level: " << tank.get_fuel_level() << " litres.\n";
+			cout << "Engine is " << (engine.started() ? "started" : "stopped:") << endl;
+		}
+	}
+
+	void info()const
+	{
+		tank.info();
+		engine.info();
+	}
+};
+
 //#define TANK_CHECK
+//#define EGINE_CHECK
 
 void main()
 {
@@ -120,6 +199,12 @@ void main()
 	}
 #endif // TANK_CHECK
 
+#ifdef EGINE_CHECK
 	Engine engine(9);
 	engine.info();
+#endif // EGINE_CHECK
+
+	Car bmw(8, 80);
+	bmw.info();
+
 }
