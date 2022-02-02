@@ -2,6 +2,7 @@
 #include <conio.h>
 #include <Windows.h>
 #include <chrono>
+#include <thread>
 using namespace std;
 
 #define MIN_TANK_VOLUME 40
@@ -71,13 +72,13 @@ public:
 	{
 		return is_started;
 	}
-	bool star()
+	bool start()
 	{
-		is_started = true;
+		return is_started = true;
 	}
 	bool stop()
 	{
-		is_started = false;
+		return is_started = false;
 	}
 	void set_consumption(double consumption)
 	{
@@ -110,6 +111,12 @@ class Car
 	Engine engine;
 	Tank tank;
 	bool driver_inside;
+	struct Control
+	{
+		std::thread panel_thread;
+		std::thread engine_idle_thread;
+		std::thread free_wheeling_thread;
+	}control;
 public:
 	Car(double engine_consumption, unsigned int tank_volume) :engine(engine_consumption), tank(tank_volume)
 	{
@@ -143,7 +150,7 @@ public:
 		driver_inside = false;
 	}
 
-	void control()
+	void control_car()
 	{
 		char key;
 		do
@@ -152,6 +159,16 @@ public:
 			switch (key)
 			{
 			case 13: //сесть в машину. Нужно тобразить панель приборов
+				if (driver_inside) //если водитель внутри,
+				{
+					//останавливаем поток, отображающий панель приборов:
+					control.panel_thread.join();
+					driver_inside = false;
+				}
+				else
+				{
+					driver_inside = true;
+				}
 				break;
 			case 'F':case 'f'://заправить машину
 				double fuel;
