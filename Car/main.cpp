@@ -137,13 +137,16 @@ public:
 	}
 	void start_engine()
 	{
-		if (tank.get_fuel_level())engine.start();
-		control.engine_idle_thread = std::thread(&Car::engine_idle, this);
+		if (tank.get_fuel_level())
+		{
+			engine.start();
+			control.engine_idle_thread = std::thread(&Car::engine_idle, this);
+		}
 	}
 	void stop_engine()
 	{
 		engine.stop();
-		control.engine_idle_thread.join();
+		if (control.engine_idle_thread.joinable())control.engine_idle_thread.join();
 	}
 
 	void get_in()
@@ -154,7 +157,7 @@ public:
 	void get_out()
 	{
 		driver_inside = false;
-		control.panel_thread.join(); //останавливаем выполнение потока panel_thread
+		if (control.panel_thread.joinable())control.panel_thread.join(); //останавливаем выполнение потока panel_thread
 		system("CLS");
 		cout << "You are out of your car" << endl;
 	}
@@ -181,15 +184,19 @@ public:
 				else start_engine();
 				break;
 			case Escape:
-				if(control.panel_thread.joinable())get_out();
+				//if (control.panel_thread.joinable())
+				stop_engine();
+				get_out();
 				break;
 			}
 		} while (key != 27);
 	}
 
+
+
 	void engine_idle()
 	{
-		while (engine.started() && 
+		while (engine.started() &&
 			tank.give_fuel(engine.get_consumption_per_second()))
 			std::this_thread::sleep_for(1s);
 	}
@@ -199,7 +206,15 @@ public:
 		while (driver_inside)
 		{
 			system("CLS");
-			cout << "Fuel level: " << tank.get_fuel_level() << " litres.\n";
+			cout << "Fuel level: " << tank.get_fuel_level() << " litres.";
+			if (tank.get_fuel_level() < 5)
+			{
+				HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+				SetConsoleTextAttribute(hConsole, 0x0C);
+				cout << "\tLOW FUEL";
+				SetConsoleTextAttribute(hConsole, 0x07);
+			}
+			cout << endl;
 			cout << "Engine is " << (engine.started() ? "started" : "stopped:") << endl;
 			std::this_thread::sleep_for(1s);
 		}
@@ -236,7 +251,7 @@ void main()
 	engine.info();
 #endif // EGINE_CHECK
 
-	Car bmw(8, 80);
+	Car bmw(20, 80);
 	cout << "Press Enter to get in" << endl;
 	bmw.control_car();
 }
