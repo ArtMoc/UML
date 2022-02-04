@@ -1,4 +1,4 @@
-#include <iostream>
+п»ї#include <iostream>
 #include <conio.h>
 #include <Windows.h>
 #include <chrono>
@@ -149,12 +149,12 @@ public:
 	void get_in()
 	{
 		driver_inside = true;
-		control.panel_thread = std::thread(&Car::control_panel, this); //запускаем метод control_panel в отдельном потоке
+		control.panel_thread = std::thread(&Car::control_panel, this); //Р·Р°РїСѓСЃРєР°РµРј РјРµС‚РѕРґ control_panel РІ РѕС‚РґРµР»СЊРЅРѕРј РїРѕС‚РѕРєРµ
 	}
 	void get_out()
 	{
 		driver_inside = false;
-		control.panel_thread.join(); //останавливаем выполнение потока panel_thread
+		control.panel_thread.join(); //РѕСЃС‚Р°РЅР°РІР»РёРІР°РµРј РІС‹РїРѕР»РЅРµРЅРёРµ РїРѕС‚РѕРєР° panel_thread
 		system("CLS");
 		cout << "You are out of your car" << endl;
 	}
@@ -167,16 +167,16 @@ public:
 			key = _getch();
 			switch (key)
 			{
-			case Enter: //сесть в машину. Нужно тобразить панель приборов
+			case Enter: //СЃРµСЃС‚СЊ РІ РјР°С€РёРЅСѓ. РќСѓР¶РЅРѕ С‚РѕР±СЂР°Р·РёС‚СЊ РїР°РЅРµР»СЊ РїСЂРёР±РѕСЂРѕРІ
 				if (driver_inside)get_out();
 				else get_in();
 				break;
-			case 'F':case 'f'://заправить машину
+			case 'F':case 'f'://Р·Р°РїСЂР°РІРёС‚СЊ РјР°С€РёРЅСѓ
 				double fuel;
-				cout << "Введите объем топлива: "; cin >> fuel;
+				cout << "Р’РІРµРґРёС‚Рµ РѕР±СЉРµРј С‚РѕРїР»РёРІР°: "; cin >> fuel;
 				fill(fuel);
 				break;
-			case 'I':case 'i': //зажигание
+			case 'I':case 'i': //Р·Р°Р¶РёРіР°РЅРёРµ
 				if (engine.started())stop_engine();
 				else start_engine();
 				break;
@@ -225,7 +225,7 @@ void main()
 	int fuel;
 	while (true)
 	{
-		cout << "Введите объем: "; cin >> fuel;
+		cout << "Р’РІРµРґРёС‚Рµ РѕР±СЉРµРј: "; cin >> fuel;
 		tank.fill(fuel);
 		tank.info();
 	}
