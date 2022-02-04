@@ -86,7 +86,7 @@ public:
 			this->consumption = consumption;
 		else
 			this->consumption = MAX_ENGINE_CONSUMPTION / 2;
-		consumption_per_second = this->consumption * .9e-4;
+		consumption_per_second = this->consumption * .3e-4;
 	}
 	explicit Engine(double consumption)
 	{
@@ -255,7 +255,7 @@ public:
 				SetConsoleTextAttribute(hConsole, 0x07);
 			}
 			cout << endl;
-			cout << "Fuel level: " << tank.get_fuel_level() << " litres.";
+			cout << "Fuel level: " << tank.get_fuel_level() << " litres. ";
 			cout << "Consumption: " << engine.get_consumption_per_second() << " liters.";
 			if (tank.get_fuel_level() < 5)
 			{
@@ -269,6 +269,16 @@ public:
 			cout << "Speed: " << speed << "km/h.\n";
 			std::this_thread::sleep_for(1s);
 		}
+	}
+
+	double ranges_consumption_fuel()
+	{
+		if (speed >= 1 && speed <= 60)return 0;
+		else if (speed >= 61 && speed <= 100)return -(engine.get_consumption_per_second()/4);
+		else if (speed >= 101 && speed <= 140)return 0;
+		else if (speed >= 141 && speed <= 200)return (engine.get_consumption_per_second() / 4);
+		else if (speed >= 201 && speed <= MAX_SPEED)return (engine.get_consumption_per_second() / 2);
+		
 	}
 
 	void info()const
