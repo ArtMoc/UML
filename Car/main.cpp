@@ -74,11 +74,11 @@ public:
 	}
 	bool start()
 	{
-		return is_started = true;
+		is_started = true;
 	}
 	bool stop()
 	{
-		return is_started = false;
+		is_started = false;
 	}
 	void set_consumption(double consumption)
 	{
