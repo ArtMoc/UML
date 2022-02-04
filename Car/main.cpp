@@ -98,6 +98,10 @@ public:
 	{
 		cout << "Engine is gone:\t" << this << endl;
 	}
+	/*double set_consumption_by_speed(int speed)
+	{
+		if (speed > 0 && speed <= 60)consumption_per_second * 10;
+	}*/
 	void info()const
 	{
 		cout << "Consumption:\t" << consumption << endl;
@@ -117,6 +121,7 @@ class Car
 	Engine engine;
 	Tank tank;
 	bool driver_inside;
+	double consumption1;
 	struct Control
 	{
 		std::thread panel_thread;
@@ -271,7 +276,8 @@ public:
 		}
 	}
 
-	double ranges_consumption_fuel()
+
+	/*double ranges_consumption_fuel()
 	{
 		if (speed >= 1 && speed <= 60)return 0;
 		else if (speed >= 61 && speed <= 100)return -(engine.get_consumption_per_second()/4);
@@ -279,7 +285,7 @@ public:
 		else if (speed >= 141 && speed <= 200)return (engine.get_consumption_per_second() / 4);
 		else if (speed >= 201 && speed <= MAX_SPEED)return (engine.get_consumption_per_second() / 2);
 		
-	}
+	}*/
 
 	void info()const
 	{
