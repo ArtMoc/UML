@@ -86,7 +86,7 @@ public:
 			this->consumption = consumption;
 		else
 			this->consumption = MAX_ENGINE_CONSUMPTION / 2;
-		consumption_per_second = consumption * .3e-4;
+		consumption_per_second = this->consumption * .3e-4;
 	}
 	explicit Engine(double consumption)
 	{
@@ -105,6 +105,9 @@ public:
 		cout << "Engine is " << (is_started ? "started" : "stopped") << endl;
 	}
 };
+
+#define Enter 13
+#define Escape 27
 
 class Car
 {
@@ -135,19 +138,25 @@ public:
 	void start_engine()
 	{
 		if (tank.get_fuel_level())engine.start();
+		control.engine_idle_thread = std::thread(&Car::engine_idle, this);
 	}
 	void stop_engine()
 	{
 		engine.stop();
+		control.engine_idle_thread.join();
 	}
 
 	void get_in()
 	{
 		driver_inside = true;
+		control.panel_thread = std::thread(&Car::control_panel, this); //запускаем метод control_panel в отдельном потоке
 	}
 	void get_out()
 	{
 		driver_inside = false;
+		control.panel_thread.join(); //останавливаем выполнение потока panel_thread
+		system("CLS");
+		cout << "You are out of your car" << endl;
 	}
 
 	void control_car()
@@ -158,17 +167,9 @@ public:
 			key = _getch();
 			switch (key)
 			{
-			case 13: //сесть в машину. Нужно тобразить панель приборов
-				if (driver_inside) //если водитель внутри,
-				{
-					//останавливаем поток, отображающий панель приборов:
-					control.panel_thread.join();
-					driver_inside = false;
-				}
-				else
-				{
-					driver_inside = true;
-				}
+			case Enter: //сесть в машину. Нужно тобразить панель приборов
+				if (driver_inside)get_out();
+				else get_in();
 				break;
 			case 'F':case 'f'://заправить машину
 				double fuel;
@@ -176,17 +177,31 @@ public:
 				fill(fuel);
 				break;
 			case 'I':case 'i': //зажигание
+				if (engine.started())stop_engine();
+				else start_engine();
+				break;
+			case Escape:
+				if(control.panel_thread.joinable())get_out();
 				break;
 			}
 		} while (key != 27);
+	}
+
+	void engine_idle()
+	{
+		while (engine.started() && 
+			tank.give_fuel(engine.get_consumption_per_second()))
+			std::this_thread::sleep_for(1s);
 	}
 
 	void control_panel()
 	{
 		while (driver_inside)
 		{
+			system("CLS");
 			cout << "Fuel level: " << tank.get_fuel_level() << " litres.\n";
 			cout << "Engine is " << (engine.started() ? "started" : "stopped:") << endl;
+			std::this_thread::sleep_for(1s);
 		}
 	}
 
@@ -222,6 +237,6 @@ void main()
 #endif // EGINE_CHECK
 
 	Car bmw(8, 80);
-	bmw.info();
-
+	cout << "Press Enter to get in" << endl;
+	bmw.control_car();
 }
