@@ -232,7 +232,7 @@ public:
 				break;
 			}
 			if (speed == 0 && control.free_wheeling_thread.joinable())control.free_wheeling_thread.join();
-			engine.set_consumption_by_speed();
+			engine.set_consumption_by_speed(speed);
 
 		} while (key != 27);
 	}
